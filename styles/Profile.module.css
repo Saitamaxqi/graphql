@@ -1,80 +1,169 @@
 .container {
-    min-height: 100vh;
-    background-color: #f3f4f6;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  .card {
-    position: relative;
-    padding: 2.5rem 1rem;
-    background-color: #ffffff;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-radius: 1.5rem;
-    max-width: 36rem;
-    margin: 0 auto;
-  }
-  
-  .cardBackground {
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(to right, #22d3ee, #0ea5e9);
-    transform: rotate(-6deg);
-    border-radius: 1.5rem;
-    z-index: -1;
-  }
-  
-  .content {
-    max-width: 24rem;
-    margin: 0 auto;
-  }
-  
-  .title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
-  
-  .infoSection {
-    padding: 2rem 0;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .infoText {
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #374151;
-    margin-bottom: 1rem;
-  }
-  
-  .statsSection {
-    padding-top: 1.5rem;
-  }
-  
-  .statsTitle {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
-  
-  .graph {
-    margin-bottom: 1.5rem;
-  }
-  
-  .graphTitle {
-    font-size: 1.125rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-  
-  .logoutButton {
-    color: #0ea5e9;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  
-  .logoutButton:hover {
-    color: #0284c7;
-  }
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card {
+  position: relative;
+  padding: 3rem 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-radius: 2rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.cardBackground {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(135deg, #3b82f6, #06b6d4);
+  transform: rotate(-3deg);
+  border-radius: 2rem;
+  z-index: -1;
+}
+
+.content {
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.infoSection {
+  background-color: #f8fafc;
+  padding: 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.infoText {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+.statsSection {
+  background-color: #f8fafc;
+  padding: 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.statsTitle {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+}
+
+.graphsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.pieChart, .barGraph {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.graphTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 1rem;
+}
+
+.pie, .bar {
+  width: 100%;
+  height: auto;
+}
+
+.skillLabels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.skillLabel {
+  font-size: 0.875rem;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.skillLabel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.auditList, .projectList {
+  list-style-type: none;
+  padding: 0;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.auditItem, .projectItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease;
+}
+
+.auditItem:hover, .projectItem:hover {
+  background-color: #f1f5f9;
+}
+
+.auditItem:last-child, .projectItem:last-child {
+  border-bottom: none;
+}
+
+.logoutButton {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
+  margin: 2rem auto 0;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.graph {
+  margin-bottom: 2rem;
+}

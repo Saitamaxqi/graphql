@@ -1,7 +1,7 @@
 'use client'
-import React from 'react';
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import styles from '../styles/Profile.module.css'
 
 interface UserData {
@@ -9,21 +9,47 @@ interface UserData {
   login: string
   firstName: string
   lastName: string
-  totalXp: number
+  email: string
   auditRatio: number
-  transactions: {
+  totalUp: number
+  totalDown: number
+  audits: {
+    nodes: {
+      id: string
+      grade: number
+      createdAt: string
+      group: {
+        captainLogin: string
+        object: {
+          name: string
+        }
+      }
+    }[]
+  }
+  progresses: {
+    id: string
+    object: {
+      id: string
+      name: string
+      type: string
+    }
+    grade: number
+    createdAt: string
+    updatedAt: string
+  }[]
+  skills: {
     type: string
     amount: number
-    createdAt: string
   }[]
-  projects: {
-    name: string
-    status: string
-  }[]
+}
+
+interface EventUser {
+  level: number
 }
 
 export default function Profile() {
   const [userData, setUserData] = useState<UserData | null>(null)
+  const [eventUser, setEventUser] = useState<EventUser | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -37,36 +63,82 @@ export default function Profile() {
       return
     }
 
+    let userId;
+    try {
+      userId = getUserIdFromToken(jwt);
+    } catch (error) {
+      console.error('Error getting user ID:', error);
+      throw new Error('Failed to extract user ID from token');
+    }
+    const eventId = 20;
+
     const query = `
-      query {
-        user {
+      query($userId: Int!, $eventId: Int!) {
+        user(where: {id: {_eq: $userId}}) {
           id
           login
           firstName
           lastName
-          totalXp
+          email
           auditRatio
-          transactions {
+          totalUp
+          totalDown
+          audits: audits_aggregate(
+            where: {
+              auditorId: {_eq: $userId},
+              grade: {_is_null: false}
+            },
+            order_by: {createdAt: desc}
+          ) {
+            nodes {
+              id
+              grade
+              createdAt
+              group {
+                captainLogin
+                object {
+                  name
+                }
+              }
+            }
+          }
+          progresses(where: { userId: { _eq: $userId }, object: { type: { _eq: "project" } } }, order_by: {updatedAt: desc}) {
+            id
+            object {
+              id
+              name
+              type
+            }
+            grade
+            createdAt
+            updatedAt
+          }
+          skills: transactions(
+            order_by: [{type: desc}, {amount: desc}]
+            distinct_on: [type]
+            where: {userId: {_eq: $userId}, type: {_in: ["skill_js", "skill_go", "skill_html", "skill_prog", "skill_front-end", "skill_back-end"]}}
+          ) {
             type
             amount
-            createdAt
           }
-          projects {
-            name
-            status
-          }
+        }
+        event_user(where: { userId: { _eq: $userId }, eventId: {_eq: $eventId}}) {
+          level
         }
       }
     `
 
     try {
-      const response = await fetch('https://((DOMAIN))/api/graphql-engine/v1/graphql', {
+      const response = await fetch('https://learn.reboot01.com//api/graphql-engine/v1/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${jwt}`,
         },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ 
+          query,
+          variables: { userId: userId, eventId: eventId }
+        }),
       })
 
       if (!response.ok) {
@@ -74,7 +146,8 @@ export default function Profile() {
       }
 
       const data = await response.json()
-      setUserData(data.data.user)
+      setUserData(data.data.user[0])
+      setEventUser(data.data.event_user)
     } catch (error) {
       console.error('Error fetching user data:', error)
     }
@@ -89,14 +162,9 @@ export default function Profile() {
     return <div>Loading...</div>
   }
 
-  const xpOverTime = userData.transactions
-    .filter(t => t.type === 'xp')
-    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+  const roundedAuditRatio = Math.round(userData.auditRatio * 10) / 10
 
-  const projectStatus = userData.projects.reduce((acc, project) => {
-    acc[project.status] = (acc[project.status] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  const totalSkillAmount = userData.skills.reduce((sum, skill) => sum + skill.amount, 0)
 
   return (
     <div className={styles.container}>
@@ -107,46 +175,74 @@ export default function Profile() {
           <div className={styles.infoSection}>
             <p className={styles.infoText}>Username: {userData.login}</p>
             <p className={styles.infoText}>Name: {userData.firstName} {userData.lastName}</p>
-            <p className={styles.infoText}>Total XP: {userData.totalXp}</p>
-            <p className={styles.infoText}>Audit Ratio: {userData.auditRatio}</p>
+            <p className={styles.infoText}>Email: {userData.email}</p>
+            <p className={styles.infoText}>Audit Ratio: {roundedAuditRatio}</p>
+            {eventUser && <p className={styles.infoText}>Event Level: {eventUser.level}</p>}
           </div>
           <div className={styles.statsSection}>
             <h2 className={styles.statsTitle}>Statistics</h2>
-            <div className={styles.graph}>
-              <h3 className={styles.graphTitle}>XP over Time</h3>
-              <svg width="400" height="200" className="bg-gray-100">
-                {xpOverTime.map((t, i) => (
-                  <rect
-                    key={i}
-                    x={i * (400 / xpOverTime.length)}
-                    y={200 - (t.amount / 1000)}
-                    width={400 / xpOverTime.length - 1}
-                    height={t.amount / 1000}
-                    fill="rgb(14, 165, 233)"
-                  />
-                ))}
-              </svg>
+            <div className={styles.graphsContainer}>
+              <div className={styles.pieChart}>
+                <h3 className={styles.graphTitle}>Skills</h3>
+                <svg viewBox="0 0 100 100" className={styles.pie}>
+                  {userData.skills.map((skill, index, array) => {
+                    const startAngle = array.slice(0, index).reduce((sum, s) => sum + s.amount, 0) / totalSkillAmount * 360
+                    const endAngle = (array.slice(0, index + 1).reduce((sum, s) => sum + s.amount, 0) / totalSkillAmount) * 360
+                    const x1 = 50 + 50 * Math.cos(Math.PI * startAngle / 180)
+                    const y1 = 50 + 50 * Math.sin(Math.PI * startAngle / 180)
+                    const x2 = 50 + 50 * Math.cos(Math.PI * endAngle / 180)
+                    const y2 = 50 + 50 * Math.sin(Math.PI * endAngle / 180)
+                    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"
+                    return (
+                      <path
+                        key={skill.type}
+                        d={`M50,50 L${x1},${y1} A50,50 0 ${largeArcFlag},1 ${x2},${y2} Z`}
+                        fill={`hsl(${index * 60}, 70%, 60%)`}
+                      />
+                    )
+                  })}
+                </svg>
+                <div className={styles.skillLabels}>
+                  {userData.skills.map((skill, index) => (
+                    <span key={skill.type} className={styles.skillLabel} style={{backgroundColor: `hsl(${index * 60}, 70%, 60%)`}}>
+                      {skill.type.replace('skill_', '')}: {skill.amount}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.barGraph}>
+                <h3 className={styles.graphTitle}>Total Up vs Total Down</h3>
+                <svg viewBox="0 0 100 100" className={styles.bar}>
+                  <rect x="10" y={100 - (userData.totalUp / (userData.totalUp + userData.totalDown) * 100)} width="30" height={(userData.totalUp / (userData.totalUp + userData.totalDown) * 100)} fill="#4ade80" />
+                  <rect x="60" y={100 - (userData.totalDown / (userData.totalUp + userData.totalDown) * 100)} width="30" height={(userData.totalDown / (userData.totalUp + userData.totalDown) * 100)} fill="#f87171" />
+                  <text x="25" y="95" textAnchor="middle" fill="#1e293b" fontSize="8">Up: {userData.totalUp}</text>
+                  <text x="75" y="95" textAnchor="middle" fill="#1e293b" fontSize="8">Down: {userData.totalDown}</text>
+                </svg>
+              </div>
             </div>
             <div className={styles.graph}>
-              <h3 className={styles.graphTitle}>Project Status</h3>
-              <svg width="200" height="200" viewBox="-1 -1 2 2" className="bg-gray-100">
-                {Object.entries(projectStatus).map(([status, count], i) => {
-                  const startAngle = i * (2 * Math.PI / Object.keys(projectStatus).length)
-                  const endAngle = (i + 1) * (2 * Math.PI / Object.keys(projectStatus).length)
-                  const x1 = Math.cos(startAngle)
-                  const y1 = Math.sin(startAngle)
-                  const x2 = Math.cos(endAngle)
-                  const y2 = Math.sin(endAngle)
-                  const largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1"
-                  return (
-                    <path
-                      key={status}
-                      d={`M 0 0 L ${x1} ${y1} A 1 1 0 ${largeArcFlag} 1 ${x2} ${y2} Z`}
-                      fill={status === 'finished' ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)'}
-                    />
-                  )
-                })}
-              </svg>
+              <h3 className={styles.graphTitle}>Recent Audits</h3>
+              <ul className={styles.auditList}>
+                {userData.audits.nodes.slice(0, 5).map((audit) => (
+                  <li key={audit.id} className={styles.auditItem}>
+                    <span>{audit.group.object.name}</span>
+                    <span>Grade: {audit.grade}</span>
+                    <span>Date: {new Date(audit.createdAt).toLocaleDateString()}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className={styles.graph}>
+              <h3 className={styles.graphTitle}>Recent Projects</h3>
+              <ul className={styles.projectList}>
+                {userData.progresses.slice(0, 5).map((progress) => (
+                  <li key={progress.id} className={styles.projectItem}>
+                    <span>{progress.object.name}</span>
+                    <span>Grade: {progress.grade}</span>
+                    <span>Last Updated: {new Date(progress.updatedAt).toLocaleDateString()}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
           <button onClick={handleLogout} className={styles.logoutButton}>
@@ -156,4 +252,17 @@ export default function Profile() {
       </div>
     </div>
   )
+}
+
+function getUserIdFromToken(token: string) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (payload && payload.sub) {
+      return parseInt(payload.sub, 10);
+    }
+    throw new Error('User ID not found in token');
+  } catch (error) {
+    console.error('Error parsing token:', error);
+    throw new Error('Invalid token structure');
+  }
 }

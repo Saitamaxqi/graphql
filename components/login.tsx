@@ -21,7 +21,7 @@ export default function Login() {
     const auth = btoa(`${username}:${password}`)
 
     try {
-      const response = await fetch('https://((DOMAIN))/api/auth/signin', {
+      const response = await fetch('https://learn.reboot01.com/api/auth/signin', {
         method: 'POST',
         headers: {
           'Authorization': `Basic ${auth}`,
@@ -33,9 +33,11 @@ export default function Login() {
       }
 
       const data = await response.json()
-      localStorage.setItem('jwt', data.token)
+      localStorage.setItem('jwt', data)
+      console.log(data.token)
       router.push('/profile')
     } catch (err) {
+      console.log(err)
       setError('Invalid username or password')
     }
   }
