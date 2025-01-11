@@ -146,8 +146,9 @@ export default function Profile() {
       }
 
       const data = await response.json()
+      console.log(data)
       setUserData(data.data.user[0])
-      setEventUser(data.data.event_user)
+      setEventUser(data.data.event_user[0])
     } catch (error) {
       console.error('Error fetching user data:', error)
     }
@@ -165,6 +166,12 @@ export default function Profile() {
   const roundedAuditRatio = Math.round(userData.auditRatio * 10) / 10
 
   const totalSkillAmount = userData.skills.reduce((sum, skill) => sum + skill.amount, 0)
+
+  const getStatus = (grade: number | null) => {
+    if (grade === null) return <span className={styles.statusPending}>Pending</span>
+    if (grade >= 1) return <span className={styles.statusPass}>Pass</span>
+    return <span className={styles.statusFail}>Fail</span>
+  }
 
   return (
     <div className={styles.container}>
@@ -220,13 +227,14 @@ export default function Profile() {
                 </svg>
               </div>
             </div>
+            
             <div className={styles.graph}>
               <h3 className={styles.graphTitle}>Recent Audits</h3>
               <ul className={styles.auditList}>
                 {userData.audits.nodes.slice(0, 5).map((audit) => (
                   <li key={audit.id} className={styles.auditItem}>
                     <span>{audit.group.object.name}</span>
-                    <span>Grade: {audit.grade}</span>
+                    {getStatus(audit.grade)}
                     <span>Date: {new Date(audit.createdAt).toLocaleDateString()}</span>
                   </li>
                 ))}
@@ -238,7 +246,7 @@ export default function Profile() {
                 {userData.progresses.slice(0, 5).map((progress) => (
                   <li key={progress.id} className={styles.projectItem}>
                     <span>{progress.object.name}</span>
-                    <span>Grade: {progress.grade}</span>
+                    {getStatus(progress.grade)}
                     <span>Last Updated: {new Date(progress.updatedAt).toLocaleDateString()}</span>
                   </li>
                 ))}

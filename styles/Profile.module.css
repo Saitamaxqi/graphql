@@ -167,3 +167,69 @@
 .graph {
   margin-bottom: 2rem;
 }
+
+.statusPass {
+  color: #22c55e;
+  font-weight: 600;
+  background-color: #f0fdf4;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.statusFail {
+  color: #ef4444;
+  font-weight: 600;
+  background-color: #fef2f2;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.statusPending {
+  color: #f59e0b;
+  font-weight: 600;
+  background-color: #fffbeb;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+.auditItem, .projectItem {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease;
+}
+
+.statusPass, .statusFail, .statusPending {
+  text-align: center;
+  width: 100px;
+  justify-self: center;
+}
+
+.barGraph {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.bar {
+  width: 100%;
+  height: auto;
+  margin-top: 1.5rem;
+}
+
+.barLabel {
+  font-size: 10px;
+  fill: #64748b;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.barValue {
+  font-size: 12px;
+  font-weight: 600;
+  fill: #1e293b;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
