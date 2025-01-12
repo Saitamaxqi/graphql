@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import styles from '../styles/Profile.module.css'
+import { AuditsRatioGraph } from './AuditsRatioGraph'
 
 interface UserData {
   id: string
@@ -217,15 +218,7 @@ export default function Profile() {
                   ))}
                 </div>
               </div>
-              <div className={styles.barGraph}>
-                <h3 className={styles.graphTitle}>Total Up vs Total Down</h3>
-                <svg viewBox="0 0 100 100" className={styles.bar}>
-                  <rect x="10" y={100 - (userData.totalUp / (userData.totalUp + userData.totalDown) * 100)} width="30" height={(userData.totalUp / (userData.totalUp + userData.totalDown) * 100)} fill="#4ade80" />
-                  <rect x="60" y={100 - (userData.totalDown / (userData.totalUp + userData.totalDown) * 100)} width="30" height={(userData.totalDown / (userData.totalUp + userData.totalDown) * 100)} fill="#f87171" />
-                  <text x="25" y="95" textAnchor="middle" fill="#1e293b" fontSize="8">Up: {userData.totalUp}</text>
-                  <text x="75" y="95" textAnchor="middle" fill="#1e293b" fontSize="8">Down: {userData.totalDown}</text>
-                </svg>
-              </div>
+              <AuditsRatioGraph totalUp={userData.totalUp} totalDown={userData.totalDown} />
             </div>
             
             <div className={styles.graph}>

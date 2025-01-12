@@ -76,11 +76,37 @@
   margin-bottom: 2rem;
 }
 
-.pieChart, .barGraph {
+.pieChart {
   background-color: #ffffff;
   padding: 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.barGraph {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.bar {
+  width: 100%;
+  height: auto;
+  margin-top: 1.5rem;
+}
+
+.barLabel {
+  font-size: 14px;
+  fill: #64748b;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.barValue {
+  font-size: 14px;
+  font-weight: 500;
+  fill: #1e293b;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .graphTitle {
@@ -90,7 +116,7 @@
   margin-bottom: 1rem;
 }
 
-.pie, .bar {
+.pie {
   width: 100%;
   height: auto;
 }
@@ -206,30 +232,3 @@
   width: 100px;
   justify-self: center;
 }
-
-.barGraph {
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.bar {
-  width: 100%;
-  height: auto;
-  margin-top: 1.5rem;
-}
-
-.barLabel {
-  font-size: 10px;
-  fill: #64748b;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.barValue {
-  font-size: 12px;
-  font-weight: 600;
-  fill: #1e293b;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
