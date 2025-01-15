@@ -7,8 +7,19 @@ interface AuditsRatioGraphProps {
 }
 
 export const AuditsRatioGraph: React.FC<AuditsRatioGraphProps> = ({ totalUp, totalDown }) => {
+  console.log('totalUp:', totalUp)
+  console.log('totalDown:', totalDown)
     const totalUpMB = Number((totalUp / 1000000).toFixed(2))
     const totalDownMB = Number((totalDown / 1000000).toFixed(2))
+    
+    // Calculate the scaling factor based on the larger value
+    const maxValue = Math.max(totalUpMB, totalDownMB)
+    const baseWidth = 400
+    
+    // Calculate relative widths
+    const upWidth = (totalUpMB / maxValue) * baseWidth
+    const downWidth = (totalDownMB / maxValue) * baseWidth
+
     return (
     <div className={styles.barGraph}>
       <h3 className={styles.graphTitle}>Audits ratio</h3>
@@ -19,7 +30,7 @@ export const AuditsRatioGraph: React.FC<AuditsRatioGraphProps> = ({ totalUp, tot
           <rect 
             x="0" 
             y="60" 
-            width="400" 
+            width={upWidth} 
             height="20" 
             fill="#FCD34D" 
             rx="4"
@@ -35,7 +46,7 @@ export const AuditsRatioGraph: React.FC<AuditsRatioGraphProps> = ({ totalUp, tot
           <rect 
             x="0" 
             y="140" 
-            width="300" 
+            width={downWidth} 
             height="20" 
             fill="#E5E7EB" 
             rx="4"
@@ -48,4 +59,3 @@ export const AuditsRatioGraph: React.FC<AuditsRatioGraphProps> = ({ totalUp, tot
     </div>
   )
 }
-
