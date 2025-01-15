@@ -9,16 +9,17 @@ interface AuditsRatioGraphProps {
 export const AuditsRatioGraph: React.FC<AuditsRatioGraphProps> = ({ totalUp, totalDown }) => {
   console.log('totalUp:', totalUp)
   console.log('totalDown:', totalDown)
-    const totalUpMB = Number((totalUp / 1000000).toFixed(2))
-    const totalDownMB = Number((totalDown / 1000000).toFixed(2))
+  const totalUpMB = (totalUp / 1000000).toFixed(2)
+  const totalDownMB = (totalDown / 1000000).toFixed(2)
+  
     
     // Calculate the scaling factor based on the larger value
-    const maxValue = Math.max(totalUpMB, totalDownMB)
+    const maxValue = Math.max(parseFloat(totalUpMB), parseFloat(totalDownMB))
     const baseWidth = 400
     
     // Calculate relative widths
-    const upWidth = (totalUpMB / maxValue) * baseWidth
-    const downWidth = (totalDownMB / maxValue) * baseWidth
+    const upWidth = (parseFloat(totalUpMB) / maxValue) * baseWidth
+    const downWidth = (parseFloat(totalDownMB) / maxValue) * baseWidth
 
     return (
     <div className={styles.barGraph}>
@@ -58,4 +59,5 @@ export const AuditsRatioGraph: React.FC<AuditsRatioGraphProps> = ({ totalUp, tot
       </svg>
     </div>
   )
+
 }
