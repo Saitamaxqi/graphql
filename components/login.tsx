@@ -1,13 +1,24 @@
 'use client'
 import React from 'react';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import styles from '../styles/Login.module.css'
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const jwt = localStorage.getItem('jwt')
+    if (jwt) {
+      router.push('/profile')
+    } else {
+      setLoading(false)
+    }
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value })
@@ -40,6 +51,11 @@ export default function Login() {
       console.log(err)
       setError('Invalid username or password')
     }
+  }
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return <div className={styles.container}>Loading...</div>
   }
 
   return (
